@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+
+<ul>
+    <li class="imgs" data-img="0"><img src="\imgs\buke.png" width="100"></li>
+    <li class="imgs" data-img="1"><img src="\imgs\tuku.jpg" width="100"></li>
+    <li class="imgs" data-img="2"><img src="\imgs\caram.png" width="100"></li>
+</ul>
+
+<div>
+    <div>名前：<input type="text" id="uname"></div>
+    <div>
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+    <div id="output" style="height:300px; width:300px; overflow:auto; border:1px solid red;"></div>
+    
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCM0kya5-wl4gD-8Ranvy9vBIPWeJrfGMo",
+    authDomain: "dev17-gsdemo.firebaseapp.com",
+    databaseURL: "https://dev17-gsdemo.firebaseio.com",
+    projectId: "dev17-gsdemo",
+    storageBucket: "dev17-gsdemo.appspot.com",
+    messagingSenderId: "855791219812",
+    appId: "1:855791219812:web:4fdd5c3eb8cce246ce9b71"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref();//.ref()==ユニークキーを自動で振ってっ下さい。
+
+
+    //アイコン処理
+    let i=0;
+    const img = ["buke.png","tuku.jpg","caram.png"];
+    $(".imgs").on("click",function(){
+         i = $(this).attr("data-img");
+    })
+
+
+
+  //関数定義
+  function send(){
+        date = new Date();
+        let d = date.getHours();
+        let m = date.getMinutes();
+        let s = date.getSeconds();
+        let time = d + "時" + m + "分" + s +"秒";
+        let uname = $("#uname").val();
+        let text = $("#text").val();
+        ///let i = $(this).attr("data-img");
+
+        const msg = {
+            uname:uname,
+            icon:i,
+            text:text+""+time
+
+
+        };
+        ref.push(msg);// set==決まった名前、前データを上書き。push==ユニーク
+
+
+  }
+
+    //文字を送信
+    $("#send").on("click",function(){
+        send();
+
+    });
+    
+    //受信処理
+    ref.on("child_added",function(data){
+        const v = data.val();//送信されたオブジェクト
+        const k = data.key;//ユニークキーの取得
+        const h = '<p>'+v.time+'<p><br>'+'<img src="imgs/'+img[v.icon]+'" width="50">'+v.uname+'<br>'+v.text+'</p><br>';
+        $("#output").append(h);
+        
+        $('#output').each(function(){ 
+            $(this).scrollTop($(this).prop('scrollHeight')); 
+      }); 
+
+
+    });
+
+    //イベント情報取得
+    $("body").on("click",function(e){
+        console.log(e);
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
